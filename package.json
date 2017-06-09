@@ -1,0 +1,22 @@
+{
+  "name": "amp-studio-website",
+  "version": "1.0.0",
+  "description": "Available online at http://amp.studio",
+  "main": "",
+  "scripts": {
+    "start": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lewisbooth/amp-studio-website.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lewisbooth/amp-studio-website/issues"
+  },
+  "homepage": "https://github.com/lewisbooth/amp-studio-website#readme",
+  "dependencies": {
+    "gulp": "^3.9.1"
+  }
+}
