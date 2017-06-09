@@ -1,2 +1,2 @@
-# amp-studio-website
-Website for amp.studio
+# Amp Studio Website
+Available online at http://amp.studio
