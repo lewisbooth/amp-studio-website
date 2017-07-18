@@ -86,3 +86,9 @@ a {
 .amp-logo-balls-container .amp-logo-ball:nth-child(4) {
   top: 45px;
 }
+
+@media (max-width: 767px) {
+  .amp-logo-balls-container {
+    margin: 15vh auto 50px auto;
+  }
+}
