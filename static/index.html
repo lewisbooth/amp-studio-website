@@ -44,7 +44,7 @@
           linkLength: 200,
           // Link width in pixels
           linkWidth: 1,
-          linkOpacity: 0.5
+          linkOpacity: 0.3
         },
         pulse: {
           // How wide the node links become when pulsed
@@ -117,8 +117,8 @@
         nodes.forEach((node) => {
           c.beginPath();
           c.arc(node[0], node[1], node[4], 0, 360);
-          c.fillStyle = "#ffffff"
-          c.strokeStyle = "#ffffff"
+          c.fillStyle = "rgba(225,225,225,0.3)"
+          c.strokeStyle = "rgba(225,225,225,0.3)"
           c.fill();
           c.stroke();
 
