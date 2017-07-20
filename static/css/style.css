@@ -11,7 +11,6 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3400ac', endColorstr='#e20674',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
   height: 100vh;
   margin: 0;
-  overflow: hidden;
 }
 
 p {
@@ -25,9 +24,16 @@ a {
   color: #fff;
 }
 
+#main-bg {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+
 .amp-logo {
   width: 100%;
   text-align: center;
+  position: absolute;
 }
 
 .amp-logo-main {
@@ -46,17 +52,17 @@ a {
   width: 110px;
   margin: 30vh auto 50px auto;
   position: relative;
-	 -webkit-animation: rotation 3s infinite linear; 
+	-webkit-animation: rotation 8s infinite linear; 
 }
 
-@-webkit-keyframes rotation {
+ @-webkit-keyframes rotation {
 		from {
 				-webkit-transform: rotate(0deg);
 		}
 		to {
 				-webkit-transform: rotate(359deg);
 		}
-}
+} 
 
 .amp-logo-ball {
   position: absolute;
@@ -71,20 +77,72 @@ a {
 
 .amp-logo-balls-container .amp-logo-ball:nth-child(1) {
   left: 40px;
+  animation: bob1 4s infinite ease-in-out;
+}
+
+@keyframes bob1 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .amp-logo-balls-container .amp-logo-ball:nth-child(2) {
   right: 0;
   top: 40px;
+  animation: bob2 4s infinite ease-in-out;
+}
+
+@keyframes bob2 {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .amp-logo-balls-container .amp-logo-ball:nth-child(3) {
   left: 40px;
   bottom: 0;
+  animation: bob3 4s infinite ease-in-out;
+}
+
+@keyframes bob3 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .amp-logo-balls-container .amp-logo-ball:nth-child(4) {
   top: 40px;
+  animation: bob4 4s infinite ease-in-out;
+}
+
+@keyframes bob4 {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 @media (max-width: 767px) {
