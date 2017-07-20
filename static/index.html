@@ -33,8 +33,9 @@
 
       const config = {
         nodes: {
-          // Nodes per 500px of canvas width
-          density: 20,
+          // Number of nodes per 500px of canvas width
+          density: 30,
+          // Size and randomness in pixels
           size: 1,
           sizeVariation: 0.5,
           // Movement speed and randomness in pixels/sec
@@ -56,52 +57,77 @@
         }
       }
 
+      // Set up globals
       const canvas = document.querySelector('#main-bg');
       const c = canvas.getContext('2d');
       let winX = window.innerWidth;
       let winY = window.innerHeight;
       const nodes = [];
 
+      // Initialise the canvas
       window.onload = () => { 
-        initializeCanvas()
+        resizeCanvas()
         setInterval(function() { window.requestAnimationFrame(stepCanvas) }, 1000/60); 
       };
       
       window.onresize = () => { resizeCanvas() };
 
-      function getRandom(min, max) {
+      const getRandom = (min, max) => {
         return Math.random() * (max - min) + min;
       }
 
-      function resizeCanvas() {
+      const addNodes = (int = 1) => {
+          for (i = 0; i < int; i++) {
+            let xPos     =  getRandom(1, winX);
+            let yPos     =  getRandom(1, winY);
+            let xVector  =  getRandom(-config.nodes.speed, config.nodes.speed) + 
+                            getRandom(-config.nodes.speedVariation, config.nodes.speedVariation); 
+            let yVector  =  getRandom(-config.nodes.speed, config.nodes.speed) + 
+                            getRandom(-config.nodes.speedVariation, config.nodes.speedVariation); 
+            let nodeSize =  getRandom(-config.nodes.sizeVariation, config.nodes.sizeVariation) + config.nodes.size;
+            // X position, Y position, X vector, Y vector, Node size, Link width initial multiplier (for pulsing)
+            let node = [xPos, yPos, xVector, yVector, nodeSize, config.nodes.linkWidth];
+            nodes.push(node);
+          }
+          console.log(nodes.length)
+      }
+
+      const resizeCanvas = () => {
+        // Save last size so we can calculate the change and adjust the nodes
+        let oldWinX = winX;
+        let oldWinY = winY;
+        // Store new size
         winX = window.innerWidth;
         winY = window.innerHeight;
+        // Calculate the change as a multiplier
+        let winXDelta = winX / oldWinX;
+        let winYDelta = winY / oldWinY;
+        // Adjust each node's position based on new dimensions, so none leave the window
+        nodes.forEach((node) => {
+          node[0] *= winXDelta;
+          node[1] *= winYDelta;
+        });
+        // Add or remove nodes to maintain desired density
+        let desiredNodes = getNodeQuantity();
+        if (desiredNodes > nodes.length) {
+          addNodes(desiredNodes - nodes.length)
+        } else if (desiredNodes < nodes.length) {
+          nodes.splice(desiredNodes - 1)
+        }
+        // Finally resize the canvas
         c.canvas.width = winX;
         c.canvas.height = winY;
       }
 
-      function initializeCanvas() {
-        resizeCanvas();
-        let nodeQuantity = winX / 500 * config.nodes.density;
-        for (i = 0; i < nodeQuantity; i++) {
-          let xPos = getRandom(1, winX);
-          let yPos = getRandom(1, winY);
-          let xVector = getRandom(-config.nodes.speed, config.nodes.speed) + 
-                        getRandom(-config.nodes.speedVariation, config.nodes.speedVariation); 
-          let yVector = getRandom(-config.nodes.speed, config.nodes.speed) + 
-                        getRandom(-config.nodes.speedVariation, config.nodes.speedVariation); 
-          let nodeSize = getRandom(-config.nodes.sizeVariation, config.nodes.sizeVariation) + config.nodes.size;
-          // X position, Y position, X vector, Y vector, Node size, Link width initial multiplier (for pulsing)
-          let node = [xPos, yPos, xVector, yVector, nodeSize];
-          nodes.push(node);
-        }
-        console.log(nodes)
+      const getNodeQuantity = () => {
+        return Math.floor(winX / 500 * config.nodes.density);
       }
 
-      function stepCanvas() {
+      const stepCanvas = () => {
 
+        // Move the nodes based on vectors
         nodes.forEach((node) => {
-          // Check if the node has left the canvas, if so flip the vector
+          // Check if the node should bounce off the canvas edge, if so flip the vector
           if (node[0] + node[2] < 0 || node[0] + node[2] > winX) {
             node[2] = -node[2];
           }
@@ -111,7 +137,7 @@
           node[0] += node[2];
           node[1] += node[3];
         });
-
+        // Clear the canvas before redraw
         c.clearRect(0, 0, canvas.width, canvas.height);
         // Draw the nodes & connections
         nodes.forEach((node) => {

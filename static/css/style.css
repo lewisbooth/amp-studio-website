@@ -52,10 +52,10 @@ a {
   width: 110px;
   margin: 30vh auto 50px auto;
   position: relative;
-	-webkit-animation: rotation 8s infinite linear; 
+	animation: rotation 8s infinite linear; 
 }
 
- @-webkit-keyframes rotation {
+ @keyframes rotation {
 		from {
 				-webkit-transform: rotate(0deg);
 		}
