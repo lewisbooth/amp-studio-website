@@ -19,14 +19,15 @@
         <div class="amp-logo-ball"></div> 
       </div>
       <img src="img/logos/amp-studio-main-white.svg" alt="Amp Studio Logo" class="amp-logo-main">
-      <p class="amp-logo-strapline">
-        Coming Soon
-      </p>
       <p>
-        <a href="mailto:lewis@amp.studio">
-          lewis@amp.studio
-        </a>
+        Digital Marketing
       </p>
+      <p class="amp-logo-strapline">
+        Preparing for launch
+      </p>
+      <a href="mailto:lewis@amp.studio">
+        lewis@amp.studio
+      </a>
     </div>
 
     <script>
@@ -85,11 +86,10 @@
             let yVector  =  getRandom(-config.nodes.speed, config.nodes.speed) + 
                             getRandom(-config.nodes.speedVariation, config.nodes.speedVariation); 
             let nodeSize =  getRandom(-config.nodes.sizeVariation, config.nodes.sizeVariation) + config.nodes.size;
-            // X position, Y position, X vector, Y vector, Node size, Link width initial multiplier (for pulsing)
-            let node = [xPos, yPos, xVector, yVector, nodeSize, config.nodes.linkWidth];
+            // X position, Y position, X vector, Y vector, Node size, Pulse strength
+            let node = [xPos, yPos, xVector, yVector, nodeSize, 1];
             nodes.push(node);
           }
-          console.log(nodes.length)
       }
 
       const resizeCanvas = () => {
@@ -162,7 +162,7 @@
               c.lineTo(otherNode[0], otherNode[1]);
               // Links become stronger besed on distance
               let opacity = config.nodes.linkOpacity - config.nodes.linkOpacity / config.nodes.linkLength * distance;
-              c.strokeStyle = `rgba(225,225,225,${opacity}`;
+              c.strokeStyle = 'rgba(225,225,225,' + opacity;
               c.stroke();
             }
           });
