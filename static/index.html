@@ -35,27 +35,26 @@
       const config = {
         nodes: {
           // Number of nodes per 500px of canvas width
-          density: 30,
+          density: 40,
           // Size and randomness in pixels
           size: 1,
           sizeVariation: 0.5,
-          nodeOpacity: 0.4,
+          nodeOpacity: 0.1,
           // Movement speed and randomness in pixels/sec
           speed: 0.5,
           speedVariation: 0.5,
           // How far away in pixels the nodes will link up
           linkLength: 200,
           // Link width in pixels
-          linkWidth: 1,
           linkOpacity: 0.3
         },
         pulse: {
           // Frequency of random pulses in milliseconds
           frequency: 4000,
           // How large the nodes become when pulsed
-          intensity: 4,
+          intensity: 5,
           // Speed of pulse in pixels/sec
-          speed: 500,
+          speed: 400,
           // Falloff of pulse in milliseconds
           falloff: 2000
         }
@@ -170,7 +169,7 @@
           c.beginPath();
           let radius = node[4] * node[5];
           c.arc(node[0], node[1], radius, 0, 360);
-          let fillOpacity = node[5] > 1 ? 1 : config.nodes.nodeOpacity;
+          let fillOpacity = node[5] * 3 * config.nodes.nodeOpacity;
           c.fillStyle = 'rgba(225,225,225,' + fillOpacity + ')';
           c.strokeStyle = 'rgba(225,225,225,' + fillOpacity + ')';
           c.fill();
