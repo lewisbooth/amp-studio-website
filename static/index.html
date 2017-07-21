@@ -76,11 +76,8 @@
 
         resizeCanvas()
         // Set frame draw interval to 60fps
-        setInterval(() => { 
-          if (canvas.classList.contains('hidden')) { return }
-          window.requestAnimationFrame(stepCanvas) 
-          }, 1000/60
-        ); 
+        stepCanvas();
+
         // Pulse random node every X milliseconds
         setInterval(() => { 
           if (canvas.classList.contains('hidden')) { return }
@@ -234,11 +231,17 @@
             pulse[3] -= falloff;
           }
         });
+
+        // Break infinite loop if canvas is no longer needed
+        if (canvas.classList.contains('hidden')) { return }
+
+        // Await next frame for redraw
+        window.requestAnimationFrame(stepCanvas);
       };
 
       const pulse = (x, y) => {
         // Create a new pulse with x, y, size, intensity
-        let newPulse = [x, y, 0, 1];
+        let newPulse = [x, y, 0, 1];        
         pulses.push(newPulse);
       };
 
