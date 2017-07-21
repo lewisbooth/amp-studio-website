@@ -92,28 +92,32 @@
         resizeCanvas() 
       };
 
+      // Fire off a pulse when mouse is clicked
       document.addEventListener('click', (e) => {
-        let x = e.offsetX;
-        let y = e.offsetY;
+        let x = e.clientX;
+        let y = e.clientY;
+        addNodes(1, x, y)
         pulse(x, y)
       });
 
+      // Returns a random number between min and max
       const getRandom = (min, max) => {
         return Math.random() * (max - min) + min;
       };
 
+      // Returns the desired number of nodes for the current screen width
       const getNodeQuantity = () => {
         return Math.floor(winX / 500 * config.nodes.density);
       };
 
-      // Find distance between two points with Pythagoras' Theorem 
+      // Returns the distance between two points with Pythagoras' Theorem 
       const getDistance = (a, b, x, y) => {
         let xDelta = Math.abs(a - x),
             yDelta = Math.abs(b - y);
         return Math.sqrt(xDelta ** 2 + yDelta ** 2);
       }
 
-      const addNodes = (int = 1) => {
+      const addNodes = (int = 1, x, y) => {
           for (i = 0; i < int; i++) {
             // Randomise node attributes
             let xPos     = getRandom(1, winX),
@@ -124,7 +128,7 @@
                            getRandom(-config.nodes.speedVariation, config.nodes.speedVariation), 
                 nodeSize = getRandom(-config.nodes.sizeVariation, config.nodes.sizeVariation) + config.nodes.size;
             // X position, Y position, X vector, Y vector, Node size, Pulse strength
-            let node = [xPos, yPos, xVector, yVector, nodeSize, 1];
+            let node = [x || xPos, y || yPos, xVector, yVector, nodeSize, 1];
             nodes.push(node);
           }
       };
