@@ -39,6 +39,7 @@
           // Size and randomness in pixels
           size: 1,
           sizeVariation: 0.5,
+          nodeOpacity: 0.4,
           // Movement speed and randomness in pixels/sec
           speed: 0.5,
           speedVariation: 0.5,
@@ -49,59 +50,95 @@
           linkOpacity: 0.3
         },
         pulse: {
-          // How wide the node links become when pulsed
-          widthMultiplier: 3,
-          // Duration in seconds before pulse fades
-          duration: 2,
-          // Speed of pulse in pixels per second
-          speed: 500
+          // Frequency of random pulses in milliseconds
+          frequency: 4000,
+          // How large the nodes become when pulsed
+          intensity: 4,
+          // Speed of pulse in pixels/sec
+          speed: 500,
+          // Falloff of pulse in milliseconds
+          falloff: 2000
         }
-      }
+      };
 
       // Set up globals
-      const canvas = document.querySelector('#main-bg');
-      const c = canvas.getContext('2d');
-      let winX = window.innerWidth;
-      let winY = window.innerHeight;
-      const nodes = [];
+      const canvas = document.querySelector('#main-bg'),
+            c = canvas.getContext('2d'),
+            pulses = [],
+            nodes = [];
+
+      let winX = window.innerWidth,
+          winY = window.innerHeight;
 
       // Initialise the canvas
       window.onload = () => { 
         resizeCanvas()
-        setInterval(function() { window.requestAnimationFrame(stepCanvas) }, 1000/60); 
+        // Set frame draw interval to 60fps
+        setInterval(() => { 
+          if (canvas.classList.contains('hidden')) { return }
+          window.requestAnimationFrame(stepCanvas) 
+          }, 1000/60
+        ); 
+        // Pulse random node every X milliseconds
+        setInterval(() => { 
+          if (canvas.classList.contains('hidden')) { return }
+          let randomNode = Math.floor(getRandom(0, nodes.length - 1));
+          pulse(nodes[randomNode][0], nodes[randomNode][1]);
+          }, config.pulse.frequency
+        ); 
       };
       
-      window.onresize = () => { resizeCanvas() };
+      window.onresize = () => { 
+        resizeCanvas() 
+      };
+
+      document.addEventListener('click', (e) => {
+        let x = e.offsetX;
+        let y = e.offsetY;
+        pulse(x, y)
+      });
 
       const getRandom = (min, max) => {
         return Math.random() * (max - min) + min;
+      };
+
+      const getNodeQuantity = () => {
+        return Math.floor(winX / 500 * config.nodes.density);
+      };
+
+      // Find distance between two points with Pythagoras' Theorem 
+      const getDistance = (a, b, x, y) => {
+        let xDelta = Math.abs(a - x),
+            yDelta = Math.abs(b - y);
+        return Math.sqrt(xDelta ** 2 + yDelta ** 2);
       }
 
       const addNodes = (int = 1) => {
           for (i = 0; i < int; i++) {
-            let xPos     =  getRandom(1, winX);
-            let yPos     =  getRandom(1, winY);
-            let xVector  =  getRandom(-config.nodes.speed, config.nodes.speed) + 
-                            getRandom(-config.nodes.speedVariation, config.nodes.speedVariation); 
-            let yVector  =  getRandom(-config.nodes.speed, config.nodes.speed) + 
-                            getRandom(-config.nodes.speedVariation, config.nodes.speedVariation); 
-            let nodeSize =  getRandom(-config.nodes.sizeVariation, config.nodes.sizeVariation) + config.nodes.size;
+            // Randomise node attributes
+            let xPos     = getRandom(1, winX),
+                yPos     = getRandom(1, winY),
+                xVector  = getRandom(-config.nodes.speed, config.nodes.speed) + 
+                           getRandom(-config.nodes.speedVariation, config.nodes.speedVariation), 
+                yVector  = getRandom(-config.nodes.speed, config.nodes.speed) + 
+                           getRandom(-config.nodes.speedVariation, config.nodes.speedVariation), 
+                nodeSize = getRandom(-config.nodes.sizeVariation, config.nodes.sizeVariation) + config.nodes.size;
             // X position, Y position, X vector, Y vector, Node size, Pulse strength
             let node = [xPos, yPos, xVector, yVector, nodeSize, 1];
             nodes.push(node);
           }
-      }
+      };
 
       const resizeCanvas = () => {
         // Save last size so we can calculate the change and adjust the nodes
-        let oldWinX = winX;
-        let oldWinY = winY;
+        let oldWinX = winX,
+            oldWinY = winY;
         // Store new size
         winX = window.innerWidth;
         winY = window.innerHeight;
         // Calculate the change as a multiplier
-        let winXDelta = winX / oldWinX;
-        let winYDelta = winY / oldWinY;
+        let winXDelta = winX / oldWinX,
+            winYDelta = winY / oldWinY;
         // Adjust each node's position based on new dimensions, so none leave the window
         nodes.forEach((node) => {
           node[0] *= winXDelta;
@@ -117,15 +154,44 @@
         // Finally resize the canvas
         c.canvas.width = winX;
         c.canvas.height = winY;
-      }
+      };
 
-      const getNodeQuantity = () => {
-        return Math.floor(winX / 500 * config.nodes.density);
-      }
 
       const stepCanvas = () => {
+        // Clear the canvas
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw frame
+        nodes.forEach((node) => {
+          // Draw the nodes
+          c.beginPath();
+          let radius = node[4] * node[5];
+          c.arc(node[0], node[1], radius, 0, 360);
+          let fillOpacity = node[5] > 1 ? 1 : config.nodes.nodeOpacity;
+          c.fillStyle = 'rgba(225,225,225,' + fillOpacity + ')';
+          c.strokeStyle = 'rgba(225,225,225,' + fillOpacity + ')';
+          c.fill();
+          c.stroke();
+          // Search for other close nodes and connect with a line
+          nodes.forEach((otherNode) => {
+            // Find distance between points            
+            distance = getDistance(node[0], node[1], otherNode[0], otherNode[1]);
+            // Link close nodes
+            if (distance < config.nodes.linkLength) {
+              c.beginPath();
+              c.moveTo(node[0], node[1]);
+              c.lineTo(otherNode[0], otherNode[1]);
+              // Links become stronger based on distance
+              let strokeOpacity = config.nodes.linkOpacity - config.nodes.linkOpacity / config.nodes.linkLength * distance;
+              // Links become stronger based on pulse strength
+              strokeOpacity *= node[5];
+              c.strokeStyle = 'rgba(225,225,225,' + strokeOpacity + ')';
+              c.lineWidth = 1;
+              c.stroke();
+            }
+          });
+        });
 
-        // Move the nodes based on vectors
+        // Apply animation to nodes ready for next frame
         nodes.forEach((node) => {
           // Check if the node should bounce off the canvas edge, if so flip the vector
           if (node[0] + node[2] < 0 || node[0] + node[2] > winX) {
@@ -134,41 +200,41 @@
           if (node[1] + node[3] < 0 || node[1] + node[3] > winY) {
             node[3] = -node[3];
           }
+          // Apply movement vectors
           node[0] += node[2];
           node[1] += node[3];
-        });
-        // Clear the canvas before redraw
-        c.clearRect(0, 0, canvas.width, canvas.height);
-        // Draw the nodes & connections
-        nodes.forEach((node) => {
-          c.beginPath();
-          c.arc(node[0], node[1], node[4], 0, 360);
-          c.fillStyle = "rgba(225,225,225,0.3)"
-          c.strokeStyle = "rgba(225,225,225,0.3)"
-          c.fill();
-          c.stroke();
-
-          // Search for other close nodes and connect with a line
-          nodes.forEach((otherNode) => {
-            // Find distance with Pythagoras' Theorem 
-            let xDelta = Math.abs(node[0] - otherNode[0]);
-            let yDelta = Math.abs(node[1] - otherNode[1]);
-            let distance = Math.sqrt(xDelta ** 2 + yDelta ** 2);
-
-            // Link close nodes
-            if (distance < config.nodes.linkLength) {
-              c.beginPath();
-              c.moveTo(node[0], node[1]);
-              c.lineTo(otherNode[0], otherNode[1]);
-              // Links become stronger besed on distance
-              let opacity = config.nodes.linkOpacity - config.nodes.linkOpacity / config.nodes.linkLength * distance;
-              c.strokeStyle = 'rgba(225,225,225,' + opacity;
-              c.stroke();
+          // Apply pulse multipliers
+          pulses.forEach((pulse) => {
+            distance = getDistance(node[0], node[1], pulse[0], pulse[1]);
+            if (distance < pulse[2]) {
+              intensity = 1 - 1 / distance;
+              node[5] = 1 + pulse[3] * config.pulse.intensity
             }
           });
-
         });
-      }
+
+        // Animate pulses
+        pulses.forEach((pulse) => {
+          // Increase pulse size by speed in pixels/sec divided by framerate
+          pulse[2] += config.pulse.speed / 60;
+          // Fade the pulse over the falloff duration
+          let falloff = 1 / (60 * config.pulse.falloff / 1000);
+          if (pulse[3] <= falloff) {
+            // Remove from array when falloff is complete
+            pulses.unshift()
+            return;
+          } else {
+            // Reduce pulse intensity by falloff rate
+            pulse[3] -= falloff;
+          }
+        });
+      };
+
+      const pulse = (x, y) => {
+        // Create a new pulse with x, y, size, intensity
+        let newPulse = [x, y, 0, 1];
+        pulses.push(newPulse);
+      };
 
     </script>
 
