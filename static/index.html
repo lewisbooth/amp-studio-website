@@ -28,16 +28,44 @@
       <a href="mailto:lewis@amp.studio">
         lewis@amp.studio
       </a>
-      <!-- <form action="contact_submit.php" method="POST" id="contact">
+      <form action="/contact_submit.php" method="post" id="contact" autocomplete="on">
         <label for="name">Name</label>
-        <input type="text" name="name">
+        <input type="text" name="name" id="form-name" required="true" maxlength="50">
         <label for="email">Email</label>
-        <input type="text" name="email">
+        <input type="email" name="email" id="form-email" required="true" maxlength="50">
         <label for="message">Message</label>
-        <input type="text" name="message">
+        <input type="text" name="message" id="form-message" required="true" maxlength="500">
         <input type="submit">
-      </form> -->
+      </form>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('#contact').submit((e) => {
+          e.preventDefault();
+          var formData = {          
+            name: $('#form-name').val(),
+            email: $('#form-email').val(),
+            message: $('#form-message').val()
+          }
+          $.ajax({
+            type: 'POST',
+            url: '/contact_submit.php',
+            data: formData,
+            dataType: 'json',
+            encode: true
+          })
+          .done((data) => {
+            if (!data.success) {
+              console.log('Failed to send form, please try again later')
+            } else {
+              console.log('Success!')
+            }
+          });
+        });
+      });
+    </script>
 
     <script>
 
