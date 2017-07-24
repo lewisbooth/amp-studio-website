@@ -29,7 +29,9 @@ $response = array();
     $errors['name'] = 'Name is required';
 
 if (empty($_POST['email']))
+{
     $errors['email'] = 'Email is required';
+}
 
 if (empty($_POST['message']))
     $errors['message'] = 'A message is required';
@@ -38,7 +40,7 @@ $name = htmlspecialchars($_POST['name']);
 $email = $_POST['email'];
 $message = htmlspecialchars($_POST['message']);
  
-if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL))
 {
     $errors['email_valid'] = 'Invalid email address';
 }
