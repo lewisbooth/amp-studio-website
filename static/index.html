@@ -15,7 +15,7 @@
       <div class="amp-logo-balls-container">
         <div class="amp-logo-ball"></div>
         <div class="amp-logo-ball"></div>
-        <div class="amp-logo-ball"></div> 
+        <div class="amp-logo-ball"></div>
         <div class="amp-logo-ball"></div> 
       </div>
       <img src="img/logos/amp-studio-main-white.svg" alt="Amp Studio Logo" class="amp-logo-main">
@@ -28,6 +28,15 @@
       <a href="mailto:lewis@amp.studio">
         lewis@amp.studio
       </a>
+      <form action="contact_submit.php" method="POST" id="contact">
+        <label for="name">Name</label>
+        <input type="text" name="name">
+        <label for="email">Email</label>
+        <input type="text" name="email">
+        <label for="message">Message</label>
+        <input type="text" name="message">
+        <input type="submit">
+      </form>
     </div>
 
     <script>
@@ -177,7 +186,7 @@
           // Search for other close nodes and connect with a line
           nodes.forEach((otherNode) => {
             // Find distance between points            
-            distance = getDistance(node[0], node[1], otherNode[0], otherNode[1]);
+            let distance = getDistance(node[0], node[1], otherNode[0], otherNode[1]);
             // Link close nodes
             if (distance < config.nodes.linkLength) {
               c.beginPath();
@@ -208,9 +217,9 @@
           node[1] += node[3];
           // Apply pulse multipliers
           pulses.forEach((pulse) => {
-            distance = getDistance(node[0], node[1], pulse[0], pulse[1]);
+            let distance = getDistance(node[0], node[1], pulse[0], pulse[1]);
             if (distance < pulse[2]) {
-              intensity = 1 - 1 / distance;
+              let intensity = 1 - 1 / distance;
               node[5] = 1 + pulse[3] * config.pulse.intensity
             }
           });
