@@ -1,9 +1,5 @@
 
 <?php
-
-// Only process if method is POST, else redirect to root
-if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
-
 function slack($name, $email, $message) {
     $data = "payload=" . json_encode(array(
         "channel"       =>  "#enquiries",
@@ -59,12 +55,6 @@ if (empty($errors))
     $response['errors'] = $errors;
 }
 
-echo json_encode($response);
-
-} else {
-
-header('location: /');
-
-}
-
+echo json_encode($response)
+phpinfo();
 ?>
